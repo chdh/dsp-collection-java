@@ -1,0 +1,42 @@
+<!-- Ant build file for source-code.biz Java DSP collection -->
+<project default="package">
+
+<target name="clean" description="Deletes the target directory.">
+ <delete dir="target" failonerror="true"/>
+</target>
+
+<target name="compile" description="Compiles the source files.">
+ <mkdir dir="target/classes"/>
+ <javac destdir="target/classes"
+    deprecation="true" includeAntRuntime="false" debug="true" debuglevel="lines,source"
+    source="1.6" target="1.6">
+  <src path="src/main/java"/>
+  <src path="src/test/java"/>
+  <compilerarg line="-Xlint -Xlint:-path -Xlint:-options -Xmaxerrs 5 -Xmaxwarns 5"/>
+ </javac>
+</target>
+
+<target name="package" depends="compile" description="Builds the JAR file.">
+ <jar destfile="target/dsp-collection.jar">
+  <fileset dir="target/classes"/>
+ </jar>
+</target>
+
+<target name="javaDoc" description="Generates the API documentation (JavaDoc)">
+ <delete dir="target/javadoc" failonerror="true"/>
+ <mkdir dir="target/javadoc"/>
+ <javadoc sourcepath="src/main/java" destdir="target/javadoc" failonerror="true"
+    link="http://docs.oracle.com/javase/7/docs/api/"/>
+</target>
+
+<target name="buildDistribZip" description="Builds the distribution ZIP file.">
+ <antcall target="clean"/>
+ <antcall target="package"/>
+ <antcall target="javaDoc"/>
+ <zip destfile="target/dsp-collection.zip">
+  <zipfileset dir="."
+   includes="build.xml, src/, target/dsp-collection.jar, target/javadoc/"/>
+ </zip>
+</target>
+
+</project>
