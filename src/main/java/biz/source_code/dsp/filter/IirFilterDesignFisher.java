@@ -269,13 +269,13 @@ private static PolynomialUtils.RationalFraction computeTransferFunction (PolesAn
 private static double computeGain (PolynomialUtils.RationalFraction tf, FilterPassType filterPassType, double fcf1, double fcf2) {
    switch (filterPassType) {
       case lowpass: {
-         return computeGainAt(tf, Complex.ONE); }
+         return computeGainAt(tf, Complex.ONE); }          // DC gain
       case highpass: {
-         return computeGainAt(tf, new Complex(-1)); }
+         return computeGainAt(tf, new Complex(-1)); }      // gain at Nyquist frequency
       case bandpass: {
          double centerFreq = (fcf1 + fcf2) / 2;
          Complex w = Complex.expj(2 * Math.PI * centerFreq);
-         return computeGainAt(tf, w); }
+         return computeGainAt(tf, w); }                    // gain at center frequency
       case bandstop: {
          double dcGain = computeGainAt(tf, Complex.ONE);
          double hfGain = computeGainAt(tf, new Complex(-1));

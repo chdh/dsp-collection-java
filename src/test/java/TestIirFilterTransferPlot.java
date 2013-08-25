@@ -31,7 +31,7 @@ private static RationalFraction        tf;
 
 private TestIirFilterTransferPlot() {
    setLocationByPlatform(true);
-   setSize(new Dimension(1000, 1000));
+   setSize(new Dimension(1000, 750));
    setDefaultCloseOperation(EXIT_ON_CLOSE);
    //
    TransferFunctionPlot plot1 = new TransferFunctionPlot(tf, true);
