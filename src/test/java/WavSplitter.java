@@ -17,6 +17,7 @@ import biz.source_code.dsp.sound.AudioIo.AudioSignal;
 
 // Test program for the AcrivityDetector class.
 // It splits a WAV file into multiple WAV files, according to the silence gaps within the record.
+// For a multi-channel WAV file, only the first channel is used for the activity detector.
 public class WavSplitter {
 
 private static final float thresholdLevel     = 0.002F;    // sound envelope treshold
