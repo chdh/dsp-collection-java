@@ -1,6 +1,10 @@
 <!-- Ant build file for source-code.biz Java DSP collection -->
 <project default="package">
 
+<property environment="env"/>
+
+<!-- Main targets ===========================================================-->
+
 <target name="clean" description="Deletes the target directory.">
  <delete dir="target" failonerror="true"/>
 </target>
@@ -22,21 +26,33 @@
  </jar>
 </target>
 
-<target name="javaDoc" description="Generates the API documentation (JavaDoc)">
- <delete dir="target/javadoc" failonerror="true"/>
- <mkdir dir="target/javadoc"/>
- <javadoc sourcepath="src/main/java" destdir="target/javadoc" failonerror="true"
+<target name="javadoc" description="Generates the API documentation (apidocs)">
+ <delete dir="target/apidocs" failonerror="true"/>
+ <mkdir dir="target/apidocs"/>
+ <javadoc sourcepath="src/main/java" destdir="target/apidocs" failonerror="true"
     link="http://docs.oracle.com/javase/7/docs/api/"/>
 </target>
+
+<!-- Website update =========================================================-->
 
 <target name="buildDistribZip" description="Builds the distribution ZIP file.">
  <antcall target="clean"/>
  <antcall target="package"/>
- <antcall target="javaDoc"/>
+ <antcall target="javadoc"/>
  <zip destfile="target/dsp-collection.zip">
   <zipfileset dir="."
-   includes="build.xml, src/, target/dsp-collection.jar, target/javadoc/"/>
+   includes="build.xml, README.txt, src/, target/dsp-collection.jar, target/apidocs/"/>
  </zip>
+</target>
+
+<target name="updateWebsite">
+ <fail unless="env.dspCollectionWebsiteDir" message="Undefined website directory."/>
+ <property name="websiteDir" location="${env.dspCollectionWebsiteDir}"/>
+ <antcall target="buildDistribZip"/>
+ <delete dir="${websiteDir}/apidocs" failonerror="true"/>
+ <copy todir="${websiteDir}" overwrite="true">
+  <fileset dir="target" includes="dsp-collection.zip, dsp-collection.jar, apidocs/"/>
+ </copy>
 </target>
 
 </project>

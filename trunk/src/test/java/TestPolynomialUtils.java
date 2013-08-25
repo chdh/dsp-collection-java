@@ -39,7 +39,8 @@ private static void verifyMultiply (double[] a1, double[] a2, double[] expectedR
    verifyEqual(a3, expectedResult); }
 
 private static void testExpand() {
-   // To verify our implementation we use the roots of the reverse Bessel polynomials from http://www.crbond.com/papers/bsf2.pdf
+   // To verify our implementation of expand() we use the roots of the reverse Bessel polynomials
+   // from http://www.crbond.com/papers/bsf2.pdf
    // The Bessel polynomial coefficients can be found at http://en.wikipedia.org/wiki/Bessel_polynomials
    // 2nd order reverse Bessel polynomial:
    verifyExpand(
