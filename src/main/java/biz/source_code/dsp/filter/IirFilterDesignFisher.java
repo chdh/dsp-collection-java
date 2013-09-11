@@ -100,7 +100,10 @@ private static Complex[] getPoles (FilterCharacteristicsType filterCharacteristi
 * for a filter with the specified pass type and cutoff frequencies.
 *
 * <p>
-* The cutoff frequencies are specified relative to the sampling rate and must be between 0 and 0.5.
+* The cutoff frequencies are specified relative to the sampling rate and must be
+* between 0 and 0.5.<br>
+* The following formula can be used to calculate the relative frequency values:
+* <pre>   frequencyInHz / samplingRateInHz</pre>
 *
 * @param poles
 *    The s-plane poles of the prototype LP filter.
