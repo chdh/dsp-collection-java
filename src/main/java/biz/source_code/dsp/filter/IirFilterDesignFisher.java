@@ -101,9 +101,7 @@ private static Complex[] getPoles (FilterCharacteristicsType filterCharacteristi
 *
 * <p>
 * The cutoff frequencies are specified relative to the sampling rate and must be
-* between 0 and 0.5.<br>
-* The following formula can be used to calculate the relative frequency values:
-* <pre>   frequencyInHz / samplingRateInHz</pre>
+* between 0 and 0.5.
 *
 * @param poles
 *    The s-plane poles of the prototype LP filter.
@@ -312,7 +310,10 @@ private static IirFilterCoefficients computeIirFilterCoefficients (PolynomialUti
 * Designs an IIR filter and returns the IIR filter coefficients.
 *
 * <p>
-* The cutoff frequencies are specified relative to the sampling rate and must be between 0 and 0.5.
+* The cutoff frequencies are specified relative to the sampling rate and must be
+* between 0 and 0.5.<br>
+* The following formula can be used to calculate the relative frequency values:
+* <pre>   frequencyInHz / samplingRateInHz</pre>
 *
 * <p>
 * For Bessel filters, matched Z-transform is used to design the filter.
