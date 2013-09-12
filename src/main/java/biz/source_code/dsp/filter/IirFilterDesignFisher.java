@@ -329,8 +329,10 @@ private static IirFilterCoefficients computeIirFilterCoefficients (PolynomialUti
 *    Passband ripple in dB. Must be negative. Only used for Chebyshev filter, ignored for other filters.
 * @param fcf1
 *    The relative filter cutoff frequency for lowpass/highpass, lower cutoff frequency for bandpass/bandstop.
+*    This value is relative to the sampling rate (see above for more details).
 * @param fcf2
 *    Ignored for lowpass/highpass, the relative upper cutoff frequency for bandpass/bandstop,
+*    This value is relative to the sampling rate (see above for more details).
 * @return
 *    The IIR filter coefficients.
 */
