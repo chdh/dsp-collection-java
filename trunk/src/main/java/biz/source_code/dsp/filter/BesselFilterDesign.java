@@ -134,6 +134,7 @@ public static double findFrequencyForGain (double[] polyCoeffs, double gain) {
 * Returns the frequency normalization scaling factor for a Bessel filter.
 * This factor is used to normalize the filter coefficients so that the
 * gain at the relative frequency 1 is -3dB.
+* (To be exact, we use 1/sqrt(2) instead of -3dB).
 *
 * @param polyCoeffs
 *    Coefficients of the reverse Bessel polynomial.
@@ -141,7 +142,7 @@ public static double findFrequencyForGain (double[] polyCoeffs, double gain) {
 *    The frequency normalization scaling factor.
 */
 public static double findFrequencyScalingFactor (double[] polyCoeffs) {
-   double dB3 = 1 / Math.sqrt(2);                          // -3dB
+   double dB3 = 1 / Math.sqrt(2);                          // about -3dB
    return findFrequencyForGain(polyCoeffs, dB3); }
 
 /**
