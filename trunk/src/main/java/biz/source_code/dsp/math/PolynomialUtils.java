@@ -129,7 +129,7 @@ public static Complex[] deflate (Complex[] a, Complex z, double eps) {
 * @param zeros
 *    The zeros of the polynomial.
 *    The polynomial formula is:
-*    <code> (x - zero[0]) * (x - zero[1]) * ... (x - zero[n - 1])
+*    <code> (x - zero[0]) * (x - zero[1]) * ... (x - zero[n - 1]) </code>
 * @return
 *    The coefficients of the expanded polynomial, ordered in descending powers.
 */

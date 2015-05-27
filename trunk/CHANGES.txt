@@ -1,0 +1,14 @@
+Changes
+-------
+
+2015-05-27
+- DFT class added.
+
+2014-03-13
+- Float-Support for WAV files added.
+  The current JDK is very buggy with floating-point support for WAV files.
+  Writing a floating-point WAV file sets the wrong encoding type in the header.
+  AudioInputStream.getFrameLength() returns the size in bytes instead of the size in frames.
+  See my bug reports:
+    http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8038138
+    http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8038139

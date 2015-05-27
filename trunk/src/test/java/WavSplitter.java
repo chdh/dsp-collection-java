@@ -15,7 +15,7 @@ import biz.source_code.dsp.signal.EnvelopeDetector;
 import biz.source_code.dsp.sound.AudioIo;
 import biz.source_code.dsp.sound.AudioIo.AudioSignal;
 
-// Test program for the AcrivityDetector class.
+// Test program for the ActivityDetector class.
 // It splits a WAV file into multiple WAV files, according to the silence gaps within the record.
 // For a multi-channel WAV file, only the first channel is used for the activity detector.
 public class WavSplitter {

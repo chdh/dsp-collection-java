@@ -22,9 +22,10 @@ public class TestPolynomialRootFinder {
 
 private static final boolean useLaguerre = false;
 
-private static double eps        = useLaguerre ? 1E-7 : 1E-10;
-private static double randomEps  = useLaguerre ? 1E-7 : 1E-5;
-private static Random            random = new Random(8742346);
+private static final double      eps       = useLaguerre ? 1E-7 : 1E-10;
+private static final double      randomEps = useLaguerre ? 1E-7 : 1E-5;
+
+private static Random            random    = new Random(8742346);
 
 public static void main (String[] args) {
    testRealZeros();
