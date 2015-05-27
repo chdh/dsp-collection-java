@@ -21,7 +21,7 @@ import biz.source_code.dsp.math.Complex;
 * The current implementation focuses on the conversion between a real signal and a complex spectrum.
 * It's not yet a complete implementation of all the classic DFT functions.
 *
-* <p>See <a href="http://dsp.stackexchange.com/questions/11376/why-are-magnitudes-normalised-during-synthesis-idft-not-analysis-dft">this Stackexchange entry</a>
+* <p>See <a href="http://dsp.stackexchange.com/questions/11376/why-are-magnitudes-normalised-during-synthesis-idft-not-analysis-dft" target="_top">this Stackexchange entry</a>
 * for a discussion of magnitude normalization.
 */
 public class Dft {

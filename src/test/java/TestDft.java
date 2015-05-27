@@ -15,7 +15,7 @@ import biz.source_code.dsp.transform.Dft;
 import biz.source_code.dsp.util.ArrayUtils;
 import java.util.Random;
 
-// Test program for the Dft class.
+// Test program for the DFT class.
 public class TestDft {
 
 private static final double      eps = 1E-9;
