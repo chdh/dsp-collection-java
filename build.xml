@@ -3,6 +3,10 @@
 
 <property environment="env"/>
 
+<condition property="isJava8">
+ <equals arg1="${ant.java.version}" arg2="1.8"/>
+</condition>
+
 <!-- Main targets ===========================================================-->
 
 <target name="clean" description="Deletes the target directory.">
@@ -30,7 +34,14 @@
  <delete dir="target/apidocs" failonerror="true"/>
  <mkdir dir="target/apidocs"/>
  <javadoc sourcepath="src/main/java" destdir="target/apidocs" failonerror="true"
-    link="http://docs.oracle.com/javase/7/docs/api/"/>
+    additionalparam="-Xdoclint:all,-missing"
+    link="https://docs.oracle.com/javase/8/docs/api/"/>
+ <antcall target="-fixupJava8Javadoc"/>
+</target>
+
+<target name="-fixupJava8Javadoc" if="isJava8">
+ <move file="target/apidocs/stylesheet.css" tofile="target/apidocs/stylesheetOrig.css"/>
+ <copy file="src/doc/javadoc8OverrideStylesheet.css" tofile="target/apidocs/stylesheet.css"/>
 </target>
 
 <!-- Website update =========================================================-->

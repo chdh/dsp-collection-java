@@ -85,7 +85,7 @@ public double im() {
 
 /**
 * Returns the real part.
-* Verifies that <code>abs(im) <= eps</code> or <code>abs(im) <= eps * abs(re)</code>.
+* Verifies that <code>abs(im) &lt;= eps</code> or <code>abs(im) &lt;= eps * abs(re)</code>.
 */
 public double toDouble (double eps) {
    double absIm = Math.abs(im);
@@ -100,7 +100,7 @@ public boolean isNaN() {
    return Double.isNaN(re) || Double.isNaN(im); }
 
 /**
-* Returns <code>true</code if the real or imaginary part is infinite.
+* Returns <code>true</code> if the real or imaginary part is infinite.
 */
 public boolean isInfinite() {
    return Double.isInfinite(re) || Double.isInfinite(im); }
@@ -122,7 +122,7 @@ public static Complex fromPolar (double abs, double arg) {
 //--- Unary operations ---------------------------------------------------------
 
 /**
-* Return the absolute value (magnitude, length, radius).
+* Returns the absolute value (magnitude, vector length, radius).
 */
 public double abs() {
    return Math.hypot(re, im); }
@@ -281,6 +281,13 @@ public Complex pow (double x) {
 */
 public Complex pow (Complex x) {
    return log().mul(x).exp(); }
+
+/**
+* Returns <code>true</code> if the real and imaginary parts of the two numbers
+* do not differ more than <code>eps</code>.
+*/
+public boolean equals (Complex x, double eps) {
+   return Math.abs(re() - x.re()) <= eps && Math.abs(im() - x.im()) <= eps; }
 
 //------------------------------------------------------------------------------
 

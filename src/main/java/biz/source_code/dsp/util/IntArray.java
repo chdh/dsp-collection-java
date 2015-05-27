@@ -145,6 +145,13 @@ public boolean equals (Object o) {
          return false; }}
    return true; }
 
+@Override
+public int hashCode() {
+   int hashCode = 1;
+   for (int i = 0; i < size; i++) {
+      hashCode = 31 * hashCode + a[i]; }
+   return hashCode; }
+
 /**
 * Bitwise unpacks an integer array from a byte array.
 */

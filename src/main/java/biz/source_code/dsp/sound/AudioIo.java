@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.File;
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -142,8 +143,10 @@ public static AudioSignal loadWavFile (String fileName) throws Exception {
    while (pos < totalFrames) {
       int reqFrames = Math.min(totalFrames - pos, blockFrames);
       int trBytes = stream.read(blockBuf, 0, reqFrames * frameSize);
+      if (trBytes <= 0) {
+         throw new AssertionError("Unexpected EOF. totalFrames=" + totalFrames + " pos=" + pos); }
       if (trBytes % frameSize != 0) {
-         throw new AssertionError(); }
+         throw new AssertionError("reqFrames=" + reqFrames + " trBytes=" + trBytes + " frameSize=" + frameSize); }
       int trFrames = trBytes / frameSize;
       unpackAudioStreamBytes(format, blockBuf, 0, signal.data, pos, trFrames);
       pos += trFrames; }
@@ -187,16 +190,23 @@ public static void play (float[] buf, int samplingRate) throws Exception {
 * A utility routine to unpack the data of a Java Sound audio stream.
 */
 public static void unpackAudioStreamBytes (AudioFormat format, byte[] inBuf, int inPos, float[][] outBufs, int outPos, int frames) {
+   Encoding encoding = format.getEncoding();
+   if (encoding == Encoding.PCM_SIGNED) {
+      unpackAudioStreamBytesPcmSigned(format, inBuf, inPos, outBufs, outPos, frames); }
+    else if (encoding == Encoding.PCM_FLOAT) {
+      unpackAudioStreamBytesPcmFloat(format, inBuf, inPos, outBufs, outPos, frames); }
+    else {
+      throw new UnsupportedOperationException("Audio stream format not supported (not signed PCM or Float)."); }}
+
+private static void unpackAudioStreamBytesPcmSigned (AudioFormat format, byte[] inBuf, int inPos, float[][] outBufs, int outPos, int frames) {
    int channels = format.getChannels();
    boolean bigEndian = format.isBigEndian();
    int sampleBits = format.getSampleSizeInBits();
    int frameSize = format.getFrameSize();
    if (outBufs.length != channels) {
       throw new IllegalArgumentException("Number of channels not equal to number of buffers."); }
-   if (format.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
-      throw new UnsupportedOperationException("Audio stream format not supported (not signed PCM)."); }
-   if (sampleBits != 16 && sampleBits != 24) {
-      throw new UnsupportedOperationException("Audio stream format not supported (" + sampleBits + " bits per sample)."); }
+   if (sampleBits != 16 && sampleBits != 24 && sampleBits != 32) {
+      throw new UnsupportedOperationException("Audio stream format not supported (" + sampleBits + " bits per sample for signed PCM)."); }
    int sampleSize = (sampleBits + 7) / 8;
    if (sampleSize * channels != frameSize) {
       throw new AssertionError(); }
@@ -208,20 +218,45 @@ public static void unpackAudioStreamBytes (AudioFormat format, byte[] inBuf, int
          int v = unpackSignedInt(inBuf, p0 + i * frameSize, sampleBits, bigEndian);
          outBuf[outPos + i] = v / maxValue; }}}
 
+private static void unpackAudioStreamBytesPcmFloat (AudioFormat format, byte[] inBuf, int inPos, float[][] outBufs, int outPos, int frames) {
+   int channels = format.getChannels();
+   boolean bigEndian = format.isBigEndian();
+   int sampleBits = format.getSampleSizeInBits();
+   int frameSize = format.getFrameSize();
+   if (outBufs.length != channels) {
+      throw new IllegalArgumentException("Number of channels not equal to number of buffers."); }
+   if (sampleBits != 32) {
+      throw new UnsupportedOperationException("Audio stream format not supported (" + sampleBits + " bits per sample for floating-point PCM)."); }
+   int sampleSize = (sampleBits + 7) / 8;
+   if (sampleSize * channels != frameSize) {
+      throw new AssertionError(); }
+   for (int channel = 0; channel < channels; channel++) {
+      float[] outBuf = outBufs[channel];
+      int p0 = inPos + channel * sampleSize;
+      for (int i = 0; i < frames; i++) {
+         outBuf[outPos + i] = unpackFloat(inBuf, p0 + i * frameSize, bigEndian); }}}
+
 /**
 * A utility routine to pack the data for a Java Sound audio stream.
 */
 public static void packAudioStreamBytes (AudioFormat format, float[][] inBufs, int inPos, byte[] outBuf, int outPos, int frames) {
+   Encoding encoding = format.getEncoding();
+   if (encoding == Encoding.PCM_SIGNED) {
+      packAudioStreamBytesPcmSigned(format, inBufs, inPos, outBuf, outPos, frames); }
+    else if (encoding == Encoding.PCM_FLOAT) {
+      packAudioStreamBytesPcmFloat(format, inBufs, inPos, outBuf, outPos, frames); }
+    else {
+      throw new UnsupportedOperationException("Audio stream format not supported (not signed PCM or Float)."); }}
+
+private static void packAudioStreamBytesPcmSigned (AudioFormat format, float[][] inBufs, int inPos, byte[] outBuf, int outPos, int frames) {
    int channels = format.getChannels();
    boolean bigEndian = format.isBigEndian();
    int sampleBits = format.getSampleSizeInBits();
    int frameSize = format.getFrameSize();
    if (inBufs.length != channels) {
       throw new IllegalArgumentException("Number of channels not equal to number of buffers."); }
-   if (format.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
-      throw new UnsupportedOperationException("Audio stream format not supported (not signed PCM)."); }
-   if (sampleBits != 16 && sampleBits != 24) {
-      throw new UnsupportedOperationException("Audio stream format not supported (" + sampleBits + " bits per sample)."); }
+   if (sampleBits != 16 && sampleBits != 24 && sampleBits != 32) {
+      throw new UnsupportedOperationException("Audio stream format not supported (" + sampleBits + " bits per sample for signed PCM)."); }
    int sampleSize = (sampleBits + 7) / 8;
    if (sampleSize * channels != frameSize) {
       throw new AssertionError(); }
@@ -233,6 +268,25 @@ public static void packAudioStreamBytes (AudioFormat format, float[][] inBufs, i
          float clipped = Math.max(-1, Math.min(1, inBuf[inPos + i]));
          int v = Math.round(clipped * maxValue);
          packSignedInt(v, outBuf, p0 + i * frameSize, sampleBits, bigEndian); }}}
+
+private static void packAudioStreamBytesPcmFloat (AudioFormat format, float[][] inBufs, int inPos, byte[] outBuf, int outPos, int frames) {
+   int channels = format.getChannels();
+   boolean bigEndian = format.isBigEndian();
+   int sampleBits = format.getSampleSizeInBits();
+   int frameSize = format.getFrameSize();
+   if (inBufs.length != channels) {
+      throw new IllegalArgumentException("Number of channels not equal to number of buffers."); }
+   if (sampleBits != 32) {
+      throw new UnsupportedOperationException("Audio stream format not supported (" + sampleBits + " bits per sample for floating-point PCM)."); }
+   int sampleSize = (sampleBits + 7) / 8;
+   if (sampleSize * channels != frameSize) {
+      throw new AssertionError(); }
+   for (int channel = 0; channel < channels; channel++) {
+      float[] inBuf = inBufs[channel];
+      int p0 = outPos + channel * sampleSize;
+      for (int i = 0; i < frames; i++) {
+         float clipped = Math.max(-1, Math.min(1, inBuf[inPos + i]));
+         packFloat(clipped, outBuf, p0 + i * frameSize, bigEndian); }}}
 
 private static int unpackSignedInt (byte[] buf, int pos, int bits, boolean bigEndian) {
    switch (bits) {
@@ -246,6 +300,8 @@ private static int unpackSignedInt (byte[] buf, int pos, int bits, boolean bigEn
             return (buf[pos] << 16) | ((buf[pos + 1] & 0xFF) << 8) | (buf[pos + 2] & 0xFF); }
           else {
             return (buf[pos + 2] << 16) | ((buf[pos + 1] & 0xFF) << 8) | (buf[pos] & 0xFF); }
+      case 32:
+         return unpackInt(buf, pos, bigEndian);
       default:
          throw new AssertionError(); }}
 
@@ -262,14 +318,43 @@ private static void packSignedInt (int i, byte[] buf, int pos, int bits, boolean
       case 24:
          if (bigEndian) {
             buf[pos]     = (byte)((i >>> 16) & 0xFF);
-            buf[pos + 1] = (byte)((i >>> 8) & 0xFF);
+            buf[pos + 1] = (byte)((i >>>  8) & 0xFF);
             buf[pos + 2] = (byte)(i & 0xFF); }
           else {
             buf[pos]     = (byte)(i & 0xFF);
-            buf[pos + 1] = (byte)((i >>> 8) & 0xFF);
+            buf[pos + 1] = (byte)((i >>>  8) & 0xFF);
             buf[pos + 2] = (byte)((i >>> 16) & 0xFF); }
+         break;
+      case 32:
+         packInt(i, buf, pos, bigEndian);
          break;
       default:
          throw new AssertionError(); }}
+
+private static int unpackInt (byte[] buf, int pos, boolean bigEndian) {
+   if (bigEndian) {
+      return (buf[pos] << 24) | ((buf[pos + 1] & 0xFF) << 16) | ((buf[pos + 2] & 0xFF) << 8) | (buf[pos + 3] & 0xFF); }
+    else {
+      return (buf[pos + 3] << 24) | ((buf[pos + 2] & 0xFF) << 16) | ((buf[pos + 1] & 0xFF) << 8) | (buf[pos] & 0xFF); }}
+
+private static void packInt (int i, byte[] buf, int pos, boolean bigEndian) {
+   if (bigEndian) {
+      buf[pos]     = (byte)((i >>> 24) & 0xFF);
+      buf[pos + 1] = (byte)((i >>> 16) & 0xFF);
+      buf[pos + 2] = (byte)((i >>>  8) & 0xFF);
+      buf[pos + 3] = (byte)(i & 0xFF); }
+    else {
+      buf[pos]     = (byte)(i & 0xFF);
+      buf[pos + 1] = (byte)((i >>>  8) & 0xFF);
+      buf[pos + 2] = (byte)((i >>> 16) & 0xFF);
+      buf[pos + 3] = (byte)((i >>> 24) & 0xFF); }}
+
+private static float unpackFloat (byte[] buf, int pos, boolean bigEndian) {
+   int i = unpackInt(buf, pos, bigEndian);
+   return Float.intBitsToFloat(i); }
+
+private static void packFloat (float f, byte[] buf, int pos, boolean bigEndian) {
+   int i = Float.floatToIntBits(f);
+   packInt(i, buf, pos, bigEndian); }
 
 }
