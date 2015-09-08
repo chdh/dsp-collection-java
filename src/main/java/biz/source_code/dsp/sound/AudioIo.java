@@ -124,33 +124,38 @@ private static class AudioBytesPackerStream extends InputStream {
 * Loads an audio signal from a WAV file.
 */
 public static AudioSignal loadWavFile (String fileName) throws Exception {
-   AudioSignal signal = new AudioSignal();
-   AudioInputStream stream = AudioSystem.getAudioInputStream(new File(fileName));
-   AudioFormat format = stream.getFormat();
-   signal.samplingRate = Math.round(format.getSampleRate());
-   int frameSize = format.getFrameSize();
-   int channels = format.getChannels();
-   long totalFramesLong = stream.getFrameLength();
-   if (totalFramesLong > Integer.MAX_VALUE) {
-      throw new Exception("Sound file too long."); }
-   int totalFrames = (int)totalFramesLong;
-   signal.data = new float[channels][];
-   for (int channel = 0; channel < channels; channel++) {
-      signal.data[channel] = new float[totalFrames]; }
-   final int blockFrames = 0x4000;
-   byte[] blockBuf = new byte[frameSize * blockFrames];
-   int pos = 0;
-   while (pos < totalFrames) {
-      int reqFrames = Math.min(totalFrames - pos, blockFrames);
-      int trBytes = stream.read(blockBuf, 0, reqFrames * frameSize);
-      if (trBytes <= 0) {
-         throw new AssertionError("Unexpected EOF. totalFrames=" + totalFrames + " pos=" + pos); }
-      if (trBytes % frameSize != 0) {
-         throw new AssertionError("reqFrames=" + reqFrames + " trBytes=" + trBytes + " frameSize=" + frameSize); }
-      int trFrames = trBytes / frameSize;
-      unpackAudioStreamBytes(format, blockBuf, 0, signal.data, pos, trFrames);
-      pos += trFrames; }
-   return signal; }
+   AudioInputStream stream = null;
+   try {
+      AudioSignal signal = new AudioSignal();
+      stream = AudioSystem.getAudioInputStream(new File(fileName));
+      AudioFormat format = stream.getFormat();
+      signal.samplingRate = Math.round(format.getSampleRate());
+      int frameSize = format.getFrameSize();
+      int channels = format.getChannels();
+      long totalFramesLong = stream.getFrameLength();
+      if (totalFramesLong > Integer.MAX_VALUE) {
+         throw new Exception("Sound file too long."); }
+      int totalFrames = (int)totalFramesLong;
+      signal.data = new float[channels][];
+      for (int channel = 0; channel < channels; channel++) {
+         signal.data[channel] = new float[totalFrames]; }
+      final int blockFrames = 0x4000;
+      byte[] blockBuf = new byte[frameSize * blockFrames];
+      int pos = 0;
+      while (pos < totalFrames) {
+         int reqFrames = Math.min(totalFrames - pos, blockFrames);
+         int trBytes = stream.read(blockBuf, 0, reqFrames * frameSize);
+         if (trBytes <= 0) {
+            throw new AssertionError("Unexpected EOF. totalFrames=" + totalFrames + " pos=" + pos); }
+         if (trBytes % frameSize != 0) {
+            throw new AssertionError("reqFrames=" + reqFrames + " trBytes=" + trBytes + " frameSize=" + frameSize); }
+         int trFrames = trBytes / frameSize;
+         unpackAudioStreamBytes(format, blockBuf, 0, signal.data, pos, trFrames);
+         pos += trFrames; }
+      return signal; }
+    finally {
+      if (stream != null) {
+         stream.close(); }}}
 
 /**
 * Plays an audio signal on the default system audio output device.

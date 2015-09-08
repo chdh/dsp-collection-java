@@ -18,8 +18,8 @@ import biz.source_code.dsp.math.Complex;
 * Discrete Fourier transform (DFT).
 *
 * <p>This class contains a collection of DFT-related methods.
-* The current implementation focuses on the conversion between a real signal and a complex spectrum.
-* It's not yet a complete implementation of all the classic DFT functions.
+* The current version is not yet a complete implementation of all the classic DFT functions and
+* focuses on the conversion between a real signal and a complex spectrum.
 *
 * <p>See <a href="http://dsp.stackexchange.com/questions/11376/why-are-magnitudes-normalised-during-synthesis-idft-not-analysis-dft" target="_top">this Stackexchange entry</a>
 * for a discussion of magnitude normalization.
