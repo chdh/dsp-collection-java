@@ -15,6 +15,7 @@ package biz.source_code.dsp.sound;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.File;
+import java.util.Arrays;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioFileFormat;
@@ -134,7 +135,7 @@ public static AudioSignal loadWavFile (String fileName) throws Exception {
       int channels = format.getChannels();
       long totalFramesLong = stream.getFrameLength();
       if (totalFramesLong > Integer.MAX_VALUE) {
-         throw new Exception("Sound file too long."); }
+         throw new IOException("Sound file too long."); }
       int totalFrames = (int)totalFramesLong;
       signal.data = new float[channels][];
       for (int channel = 0; channel < channels; channel++) {
@@ -146,9 +147,15 @@ public static AudioSignal loadWavFile (String fileName) throws Exception {
          int reqFrames = Math.min(totalFrames - pos, blockFrames);
          int trBytes = stream.read(blockBuf, 0, reqFrames * frameSize);
          if (trBytes <= 0) {
-            throw new AssertionError("Unexpected EOF. totalFrames=" + totalFrames + " pos=" + pos); }
+            if (format.getEncoding() == Encoding.PCM_FLOAT && pos * frameSize == totalFrames) {
+               // Workaround for JDK bug JDK-8038139 / JI-9011075.
+               // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8038139
+               // https://bugs.openjdk.java.net/browse/JDK-8038139
+               truncateSignal(signal, pos);
+               break; }
+            throw new IOException("Unexpected EOF while reading WAV file. totalFrames=" + totalFrames + " pos=" + pos + " frameSize=" + frameSize + "."); }
          if (trBytes % frameSize != 0) {
-            throw new AssertionError("reqFrames=" + reqFrames + " trBytes=" + trBytes + " frameSize=" + frameSize); }
+            throw new IOException("Length of transmitted data is not a multiple of frame size. reqFrames=" + reqFrames + " trBytes=" + trBytes + " frameSize=" + frameSize + "."); }
          int trFrames = trBytes / frameSize;
          unpackAudioStreamBytes(format, blockBuf, 0, signal.data, pos, trFrames);
          pos += trFrames; }
@@ -156,6 +163,10 @@ public static AudioSignal loadWavFile (String fileName) throws Exception {
     finally {
       if (stream != null) {
          stream.close(); }}}
+
+private static void truncateSignal (AudioSignal signal, int length) {
+   for (int channel = 0; channel < signal.getChannels(); channel++) {
+      signal.data[channel] = Arrays.copyOf(signal.data[channel], length); }}
 
 /**
 * Plays an audio signal on the default system audio output device.
