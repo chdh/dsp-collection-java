@@ -15,7 +15,8 @@
 package biz.source_code.dsp.filter;
 
 /**
-* Adds an echo to a signal.
+* A very simple echo filter that adds an echo to a signal.
+*
 * <p>
 * This filter produces multiple echoes by adding attenuated delayed output samples to the input signal.
 */

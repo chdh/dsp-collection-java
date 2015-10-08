@@ -19,7 +19,8 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
 // Test program for the EchoFilter class.
-//
+// This program routes a real-time audio stream from the default input audio device
+// through the echo filter to the default output audio device.
 public class TestEchoFilter {
 
 private static final int    samplingRate        = 44100;
