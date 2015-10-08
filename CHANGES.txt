@@ -1,6 +1,11 @@
 Changes
 -------
 
+2015-10-08
+- Echo filter added (EchoFilter, EchoFilterAudioInputStream, TestEchoFilter).
+- Audio stream pump added (AudioStreamPump, TestAudioStreamPump).
+- New interface SignalFilter and helper class SignalFilterAudioInputStream added.
+
 2015-09-08
 - Error corrected in AudioIo.loadWavFile(): stream.close() was missing.
 

@@ -26,7 +26,7 @@ package biz.source_code.dsp.filter;
 * </pre>
 * (x = input, y = output, a and b = filter coefficients, a[0] must be 1)
 */
-public class IirFilter {
+public class IirFilter implements SignalFilter {
 
 private int                  n1;                           // size of input delay line
 private int                  n2;                           // size of output delay line
@@ -54,10 +54,7 @@ public IirFilter (IirFilterCoefficients coeffs) {
    buf1 = new double[n1];
    buf2 = new double[n2]; }
 
-/**
-* Processes one input signal value and returns the next output signal value.
-*/
-public double step (double inputValue) {
+@Override public double step (double inputValue) {
    double acc = b[0] * inputValue;
    for (int j = 1; j <= n1; j++) {
       int p = (pos1 + n1 - j) % n1;
