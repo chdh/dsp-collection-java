@@ -15,7 +15,7 @@ package biz.source_code.dsp.math;
 /**
 * Complex number.
 */
-public final class Complex {                               // is final to allow inlining of methods at runtime
+public final class Complex {                               // the class is final to allow inlining of methods at runtime
 
 /**
 * The imaginary unit i.
@@ -85,7 +85,7 @@ public double im() {
 
 /**
 * Returns the real part.
-* Verifies that <code>abs(im) &lt;= eps</code> or <code>abs(im) &lt;= eps * abs(re)</code>.
+* Verifies that <code>abs(im) &lt;= eps</code> or <code>abs(im) &lt;= abs(re) * eps</code>.
 */
 public double toDouble (double eps) {
    double absIm = Math.abs(im);
@@ -108,13 +108,13 @@ public boolean isInfinite() {
 //--- Static operations --------------------------------------------------------
 
 /**
-* Creates a Complex of length 1 and argument <code>arg</code>.
+* Creates a <code>Complex</code> of length 1 and argument <code>arg</code>.
 */
 public static Complex expj (double arg) {
    return new Complex(Math.cos(arg), Math.sin(arg)); }
 
 /**
-* Creates a Complex from polar coordinates.
+* Creates a <code>Complex</code> from polar coordinates.
 */
 public static Complex fromPolar (double abs, double arg) {
    return new Complex(abs * Math.cos(arg), abs * Math.sin(arg)); }
@@ -152,7 +152,7 @@ public Complex reciprocal() {
    if (isNaN()) {
       return NaN; }
    if (isInfinite()) {
-      return new Complex(0, 0); }
+      return ZERO; }
    double scale = re * re + im * im;
    if (scale == 0) {
       return INF; }
@@ -182,7 +182,7 @@ public Complex sqr() {
 */
 public Complex sqrt() {
    if (re == 0 && im == 0) {
-      return new Complex(0, 0); }
+      return ZERO; }
    double m = abs();
    return new Complex(Math.sqrt((m + re) / 2), Math.copySign(1, im) * Math.sqrt((m - re) / 2)); }
 //
@@ -192,13 +192,13 @@ public Complex sqrt() {
 //    return fromPolar(m, a); }
 //
 // Version from Apache commons math (unclear, not yet verified):
-//    if (r == 0 && i == 0) {
+//    if (re == 0 && im == 0) {
 //       return new Complex(0, 0); }
-//    double t = Math.sqrt((Math.abs(r) + abs()) / 2);
-//    if (r >= 0) {
-//       return new Complex(t, i / (2 * t)); }
+//    double t = Math.sqrt((Math.abs(re) + abs()) / 2);
+//    if (re >= 0) {
+//       return new Complex(t, im / (2 * t)); }
 //     else {
-//       return new Complex(Math.abs(i) / (2 * t), Math.copySign(1, i) * t); }}
+//       return new Complex(Math.abs(im) / (2 * t), Math.copySign(1, im) * t); }}
 
 //--- Binary operations --------------------------------------------------------
 
@@ -265,19 +265,19 @@ public static Complex div (double x, Complex y) {
    return new Complex(x * y.re / m, -x * y.im / m); }
 
 /**
-* Returns this raised to the power of <code>x</code>.
+* Returns <code>this</code> raised to the power of <code>x</code>.
 */
 public Complex pow (int x) {
    return fromPolar(Math.pow(abs(), x), arg() * x); }
 
 /**
-* Returns this raised to the power of <code>x</code>.
+* Returns <code>this</code> raised to the power of <code>x</code>.
 */
 public Complex pow (double x) {
    return log().mul(x).exp(); }
 
 /**
-* Returns this raised to the power of <code>x</code>.
+* Returns <code>this</code> raised to the power of <code>x</code>.
 */
 public Complex pow (Complex x) {
    return log().mul(x).exp(); }

@@ -13,11 +13,11 @@
 package biz.source_code.dsp.math;
 
 /**
-* Plynomial utility routines.
+* Polynomial utility routines.
 *
 * <p>
 * In this module, polynomial coefficients are stored in arrays ordered in descending powers.
-* When an awway a[] contains the coefficients, the polynomial has the following form:<br>
+* When an array a[] contains the coefficients, the polynomial has the following form:<br>
 * <code> a[0] * x^n + a[1] * x^(n-1) + ... a[n-1] * x + a[n] </code>
 *
 */
