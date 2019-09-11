@@ -24,7 +24,7 @@
 // (see http://web.archive.org/web/20000815222724/http://www-users.cs.york.ac.uk/~fisher/)
 // Tony Fisher died on February 2000. We can assume that his intention was to make his
 // source code freely available.
-// See also: http://sk3w.se/svx/deb_new/svxlink-11.03/async/audio/fidmkf.h
+// See also: https://github.com/JamesHight/fidlib/blob/master/fidmkf.h
 
 package biz.source_code.dsp.filter;
 
