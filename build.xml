@@ -17,7 +17,7 @@
  <mkdir dir="target/classes"/>
  <javac destdir="target/classes"
     deprecation="true" includeAntRuntime="false" debug="true" debuglevel="lines,source"
-    source="1.6" target="1.6">
+    source="7" target="7">
   <src path="src/main/java"/>
   <src path="src/test/java"/>
   <compilerarg line="-Xlint -Xlint:-path -Xlint:-options -Xmaxerrs 5 -Xmaxwarns 5"/>
